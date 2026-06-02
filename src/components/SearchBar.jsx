@@ -50,7 +50,7 @@ function SearchBar({ className = "" }) {
         />
         <Button
           type="submit"
-          className="absolute end-1.5 bottom-1 top-1"
+          className="absolute end-1.5 bottom-1 top-1 bg-yellow-300 hover:bg-yellow-400"
           text={"Search"}
           onClick={handleSubmit}
         />

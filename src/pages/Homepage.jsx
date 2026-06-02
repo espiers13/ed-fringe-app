@@ -1,10 +1,12 @@
 import Heading from "../components/Heading";
 import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
+import { useNavigate } from "react-router-dom";
 
 function Homepage() {
+  const navigate = useNavigate();
   function browseClick() {
-    console.log("browse");
+    navigate("/browse");
   }
 
   function nearbyClick() {
@@ -16,7 +18,7 @@ function Homepage() {
   }
 
   return (
-    <main className="mt-5 px-6 max-w-6xl mx-auto">
+    <div className="mt-5 px-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <div className="flex flex-col gap-5 mt-6 text-center">
           <Heading text="Find something to watch" />
@@ -41,7 +43,7 @@ function Homepage() {
           className="rounded-xl w-full object-cover"
         />
       </div>
-    </main>
+    </div>
   );
 }
 
