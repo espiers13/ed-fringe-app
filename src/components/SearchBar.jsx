@@ -1,8 +1,9 @@
 import Button from "./Button";
 import { useState } from "react";
 
-function SearchBar({ className = "" }) {
-  const [query, setQuery] = useState("");
+function SearchBar({ className = "", onSearch, defaultValue = "" }) {
+  const [query, setQuery] = useState(defaultValue);
+  const [holderText, setHolderText] = useState("Search");
 
   function searchQuery(e) {
     setQuery(e.target.value);
@@ -10,7 +11,7 @@ function SearchBar({ className = "" }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(query);
+    onSearch(query);
   }
 
   return (
@@ -18,6 +19,7 @@ function SearchBar({ className = "" }) {
       <label
         htmlFor="search"
         className="block mb-2.5 text-sm font-medium text-heading sr-only "
+        onSubmit={handleSubmit}
       >
         Search
       </label>
@@ -45,7 +47,8 @@ function SearchBar({ className = "" }) {
           id="search"
           className="block w-full p-3 ps-9 border border-gray-500 text-black-500 text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
           placeholder="Search"
-          onChange={searchQuery}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           required
         />
         <Button

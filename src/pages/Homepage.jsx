@@ -1,6 +1,7 @@
 import Heading from "../components/Heading";
 import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
+import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
 
 function Homepage() {

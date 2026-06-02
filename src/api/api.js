@@ -13,16 +13,25 @@ function signUrl(path) {
   return `${path}&signature=${signature}`;
 }
 
-export const getAllEvents = () => {
-  const path = `/events?festival=demofringe&size=25&key=${API_KEY}`;
+export const getAllEvents = (page = 1) => {
+  const path = `/events?festival=demofringe&from=${page}&size=25&key=${API_KEY}`;
   const signedUrl = signUrl(path);
   return festivalApi
     .get(signedUrl)
     .then(({ data }) => {
-      console.log(data);
       return data;
     })
     .catch((err) => {
       console.log(err);
     });
+};
+
+export const searchEvents = (query) => {
+  const encodedQuery = encodeURIComponent(query);
+  const path = `/events?festival=demofringe&title=${encodedQuery}&key=${API_KEY}`;
+  const signedUrl = signUrl(path);
+  return festivalApi
+    .get(signedUrl)
+    .then(({ data }) => data)
+    .catch((err) => console.log(err));
 };
