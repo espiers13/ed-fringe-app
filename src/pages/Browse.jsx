@@ -1,8 +1,10 @@
 import Heading from "../components/Heading";
+import Loading from "../components/Loading";
 import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
 import ShowCard from "../components/ShowCard";
-import Loading from "../components/Loading";
+import DateFilter from "../components/DateFilter";
+import GenreFilter from "../components/GenreFilter";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllEvents, searchEvents } from "../api/api";
@@ -12,6 +14,10 @@ function Browse() {
   const [events, setEvents] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateFilter, setDateFilter] = useState(null);
+  const [genreFilter, setGenreFilter] = useState(null);
+  const [filters, setFilters] = useState(false);
 
   const page = parseInt(searchParams.get("page") || "1");
   const searchQuery = searchParams.get("query") || "";
@@ -20,7 +26,7 @@ function Browse() {
     setIsLoading(true);
     const fetchData = searchQuery
       ? searchEvents(searchQuery)
-      : getAllEvents(page);
+      : getAllEvents(page, dateFilter, genreFilter);
 
     setIsSearch(!!searchQuery);
 
@@ -32,10 +38,15 @@ function Browse() {
       .catch((err) => {
         console.log("error:", err);
       });
-  }, [page, searchQuery]);
+  }, [page, searchQuery, filters]);
 
   function handleSearch(query) {
     setSearchParams({ query, page: 1 });
+  }
+
+  function handleFilters(e) {
+    e.preventDefault();
+    setFilters(!filters);
   }
 
   function handleNextPage() {
@@ -48,13 +59,36 @@ function Browse() {
 
   return (
     <div className="mt-5 px-6 mx-auto">
-      <div className="text-center flex flex-col gap-5 mt-15">
-        <Heading text="Find something to watch" />
-        <p className="text-gray-600 text-sm">
-          Search for a specific show, browse all shows, or filter shows by
-          genre!
-        </p>
+      <div className="flex flex-col gap-5 mt-15">
+        <div className="text-center">
+          <Heading text="Find something to watch" />
+          <p className="text-gray-600 text-sm mt-2">
+            Search for a specific show, browse all shows, or filter shows by
+            genre or date!
+          </p>
+        </div>
+
         <SearchBar onSearch={handleSearch} defaultValue={searchQuery} />
+        <div className="flex flex-col">
+          <Button
+            text={showFilters ? "Hide Filters" : "Filters"}
+            onClick={() => setShowFilters((prev) => !prev)}
+            className="bg-gray-100"
+          />
+          {showFilters && (
+            <form onSubmit={handleFilters}>
+              <div className="flex flex-col gap-3 mt-3 p-4 border border-gray-200 rounded-xl bg-gray-50">
+                <DateFilter setDateFilter={setDateFilter} />
+                <GenreFilter setGenreFilter={setGenreFilter} />
+                <Button
+                  text={"Set filters"}
+                  type="submit"
+                  className="bg-yellow-300 hover:bg-yellow-400"
+                />
+              </div>
+            </form>
+          )}
+        </div>
       </div>
       {isLoading ? (
         <Loading />

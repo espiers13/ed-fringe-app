@@ -1,13 +1,8 @@
 import Button from "./Button";
 import { useState } from "react";
 
-function SearchBar({ className = "", onSearch, defaultValue = "" }) {
+function SearchBar({ onSearch, defaultValue = "" }) {
   const [query, setQuery] = useState(defaultValue);
-  const [holderText, setHolderText] = useState("Search");
-
-  function searchQuery(e) {
-    setQuery(e.target.value);
-  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -15,7 +10,10 @@ function SearchBar({ className = "", onSearch, defaultValue = "" }) {
   }
 
   return (
-    <form className={`${className}`}>
+    <form>
+      <p className="text-sm text-gray-500 mb-1">
+        Search by artist or show title
+      </p>
       <label
         htmlFor="search"
         className="block mb-2.5 text-sm font-medium text-heading sr-only "
@@ -45,7 +43,7 @@ function SearchBar({ className = "", onSearch, defaultValue = "" }) {
         <input
           type="search"
           id="search"
-          className="block w-full p-3 ps-9 border border-gray-500 text-black-500 text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+          className="block w-full p-3 ps-9 border border-gray-500 text-black-500 text-sm rounded-lg  shadow-sm placeholder:text-body"
           placeholder="Search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

@@ -13,25 +13,37 @@ function signUrl(path) {
   return `${path}&signature=${signature}`;
 }
 
-export const getAllEvents = (page = 1) => {
-  const path = `/events?festival=demofringe&from=${page}&size=25&key=${API_KEY}`;
+export const getAllEvents = (page = 1, date = "", genre = "") => {
+  let path = `/events?festival=demofringe&from=${page}&size=25`;
+  if (date) path += `&date_from=${encodeURIComponent(date + " 00:00:00")}`;
+  if (genre) path += `&genre=${encodeURIComponent(genre)}`;
+  path += `&key=${API_KEY}`;
   const signedUrl = signUrl(path);
   return festivalApi
     .get(signedUrl)
-    .then(({ data }) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(({ data }) => data ?? [])
+    .catch((err) => console.log(err));
 };
-
 export const searchEvents = (query) => {
   const encodedQuery = encodeURIComponent(query);
-  const path = `/events?festival=demofringe&title=${encodedQuery}&key=${API_KEY}`;
-  const signedUrl = signUrl(path);
-  return festivalApi
-    .get(signedUrl)
-    .then(({ data }) => data)
+
+  const titleSearch = festivalApi.get(
+    signUrl(`/events?festival=demofringe&title=${encodedQuery}&key=${API_KEY}`),
+  );
+  const artistSearch = festivalApi.get(
+    signUrl(
+      `/events?festival=demofringe&artist=${encodedQuery}&key=${API_KEY}`,
+    ),
+  );
+
+  return Promise.all([titleSearch, artistSearch])
+    .then(([titleResults, artistResults]) => {
+      const combined = [...titleResults.data, ...artistResults.data];
+      const unique = combined.filter(
+        (event, index, self) =>
+          index === self.findIndex((e) => e.url === event.url),
+      );
+      return unique;
+    })
     .catch((err) => console.log(err));
 };
