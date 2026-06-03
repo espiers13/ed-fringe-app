@@ -8,6 +8,10 @@ const festivalApi = axios.create({
   baseURL: "/festival-api",
 });
 
+const userApi = axios.create({
+  baseURL: "https://ed-fringe-be.onrender.com/api",
+});
+
 function signUrl(path) {
   const signature = CryptoJS.HmacSHA1(path, SECRET).toString(CryptoJS.enc.Hex);
   return `${path}&signature=${signature}`;
@@ -24,6 +28,16 @@ export const getAllEvents = (page = 1, date = "", genre = "") => {
     .then(({ data }) => data ?? [])
     .catch((err) => console.log(err));
 };
+
+export const getEventByCode = (code) => {
+  const path = `/events?festival=demofringe&code=${code}&key=${API_KEY}`;
+  const signedUrl = signUrl(path);
+  return festivalApi
+    .get(signedUrl)
+    .then(({ data }) => data[0] ?? null)
+    .catch((err) => console.log(err));
+};
+
 export const searchEvents = (query) => {
   const encodedQuery = encodeURIComponent(query);
 
@@ -45,5 +59,34 @@ export const searchEvents = (query) => {
       );
       return unique;
     })
+    .catch((err) => console.log(err));
+};
+
+export const loginUser = (username, password) => {
+  return userApi
+    .post("/login", { username, password })
+    .then(({ data }) => data)
+    .catch((err) => console.log(err));
+};
+
+export const getSchedule = (user_id, token) => {
+  return userApi
+    .get(`/schedule/${user_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(({ data }) => data)
+    .catch((err) => console.log(err));
+};
+
+export const removeFromSchedule = (user_id, token, code) => {
+  return userApi
+    .patch(
+      `/schedule/${user_id}`,
+      { code },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
+    .then(({ data }) => data)
     .catch((err) => console.log(err));
 };

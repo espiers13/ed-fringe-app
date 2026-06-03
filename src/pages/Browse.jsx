@@ -8,8 +8,10 @@ import GenreFilter from "../components/GenreFilter";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllEvents, searchEvents } from "../api/api";
+import { useUser } from "../context/UserContext";
 
 function Browse() {
+  const { user, token, logout } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState([]);
   const [isSearch, setIsSearch] = useState(false);

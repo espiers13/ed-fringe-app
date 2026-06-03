@@ -18,6 +18,10 @@ function Homepage() {
     console.log("schedule");
   }
 
+  function handleSearch(query) {
+    navigate(`/browse?query=${encodeURIComponent(query)}&page=1`);
+  }
+
   return (
     <div className="mt-5 px-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -27,7 +31,7 @@ function Homepage() {
             Search for a specific show, browse all shows, or click Nearby to see
             what's near you now!
           </p>
-          <SearchBar />
+          <SearchBar onSearch={handleSearch} />
           <div className="grid grid-cols-2 gap-3">
             <Button text="Browse" onClick={browseClick} />
             <Button text="Nearby" onClick={nearbyClick} />

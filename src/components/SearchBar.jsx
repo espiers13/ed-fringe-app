@@ -10,14 +10,13 @@ function SearchBar({ onSearch, defaultValue = "" }) {
   }
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <p className="text-sm text-gray-500 mb-1">
         Search by artist or show title
       </p>
       <label
         htmlFor="search"
         className="block mb-2.5 text-sm font-medium text-heading sr-only "
-        onSubmit={handleSubmit}
       >
         Search
       </label>
