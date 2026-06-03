@@ -12,7 +12,10 @@ function Header() {
         </a>
       </div>
       <h1 className="row-span-1 w-20"></h1>
-      <h1 className="row-span-1">Fringe Planner</h1>
+      <a href="/">
+        <h1 className="row-span-1">My Fringe Planner</h1>
+      </a>
+
       <Menu />
     </header>
   );

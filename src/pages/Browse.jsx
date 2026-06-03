@@ -11,7 +11,7 @@ import { getAllEvents, searchEvents } from "../api/api";
 import { useUser } from "../context/UserContext";
 
 function Browse() {
-  const { user, token, logout } = useUser();
+  const { user, token } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState([]);
   const [isSearch, setIsSearch] = useState(false);

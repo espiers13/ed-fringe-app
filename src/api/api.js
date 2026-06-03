@@ -90,3 +90,14 @@ export const removeFromSchedule = (user_id, token, code) => {
     .then(({ data }) => data)
     .catch((err) => console.log(err));
 };
+
+export const addToSchedule = (user_id, token, code) => {
+  return userApi
+    .post(
+      `/schedule/${user_id}`,
+      { code },
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    .then(({ data }) => data)
+    .catch((err) => console.log(err));
+};

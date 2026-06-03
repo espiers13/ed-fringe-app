@@ -1,7 +1,12 @@
 import Button from "./Button";
 import { useState } from "react";
+import { addToSchedule, removeFromSchedule } from "../api/api";
+import { useUser } from "../context/UserContext";
 
 function ShowCard({ event }) {
+  const [isAdded, setIsAdded] = useState(false);
+  const [message, setMessage] = useState("");
+  const { user, token } = useUser();
   const {
     artist,
     title,
@@ -12,9 +17,20 @@ function ShowCard({ event }) {
     website,
     venue,
     disabled,
+    performances,
+    code,
   } = event;
 
-  const [isAdded, setIsAdded] = useState(false);
+  const { start } = performances[0];
+
+  const formatDateTime = (dateString) => {
+    return new Date(dateString).toLocaleString("en-GB", {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 
@@ -22,17 +38,35 @@ function ShowCard({ event }) {
     window.location.href = website;
   }
 
-  function addToSchedule() {
-    console.log("added");
-    setIsAdded(!isAdded);
+  function showMessage(text) {
+    setMessage(text);
+    setTimeout(() => setMessage(""), 2000);
   }
 
+  function addEvent() {
+    addToSchedule(user.id, token, code).then(() => {
+      setIsAdded(true);
+      showMessage("Added! ✓");
+    });
+  }
+
+  function removeEvent() {
+    removeFromSchedule(user.id, token, code).then(() => {
+      setIsAdded(false);
+      showMessage("Removed!");
+    });
+  }
   return (
     <div className="bg-neutral-100 flex flex-col p-3 rounded-xl border border-neutral-300 shadow-sm gap-2 overflow-hidden">
       <div className="relative">
         {image && <img className="w-full" src={image} alt={title} />}
+        {message && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg animate-fade">
+            <p className="text-white font-bold text-sm">{message}</p>
+          </div>
+        )}
         <button
-          onClick={addToSchedule}
+          onClick={isAdded ? removeEvent : addEvent}
           className="group absolute top-2 right-2 bg-white/70 hover:bg-white p-1.5 rounded-full transition-colors duration-200"
         >
           <svg
@@ -54,9 +88,9 @@ function ShowCard({ event }) {
         {genre}
       </span>
 
-      <h1 className="font-bold text-black-500 text-center">
+      <p className="font-bold text-black-500 text-center text-sm">
         {title.replace("FAKE ", "")}
-      </h1>
+      </p>
       <p className="text-xs italic text-center">
         {artist.replace("DEMO: ", "")}
       </p>
@@ -72,14 +106,18 @@ function ShowCard({ event }) {
           <p className="text-xs line-clamp-1">
             {venue.name.replace("DEMO: ", "")}
           </p>
+
           <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
             {performance_space.name.replace("DEMO: ", "")}
           </p>
         </div>
+        <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
+        <p className="text-xs">{formatDateTime(start)}</p>
         <hr className="my-1 border-neutral-400 border-0.5" />
         <p className="text-xs md:hidden">
           {performance_space.name.replace("DEMO: ", "")}
         </p>
+
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
         <div className="flex gap-2 items-center">
           <p className="text-xs">Accessibility:</p>
@@ -116,9 +154,9 @@ function ShowCard({ event }) {
           onClick={seeMore}
         />
         <Button
-          text="Add to Schedule"
+          text={isAdded ? "Remove" : "Add to Schedule"}
           className="bg-yellow-300 hover:bg-yellow-400 text-xs"
-          onClick={addToSchedule}
+          onClick={isAdded ? removeEvent : addEvent}
         />
       </div>
     </div>

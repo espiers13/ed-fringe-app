@@ -8,7 +8,6 @@ function ScheduleCard({ event, onDelete }) {
     title,
     genre,
     performance_space,
-    description,
     images,
     website,
     venue,
@@ -25,8 +24,6 @@ function ScheduleCard({ event, onDelete }) {
       minute: "2-digit",
     });
   };
-
-  //   console.log(start, end);
 
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 

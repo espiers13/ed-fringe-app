@@ -15,7 +15,7 @@ function Homepage() {
   }
 
   function scheduleClick() {
-    console.log("schedule");
+    navigate("/schedule");
   }
 
   function handleSearch(query) {
@@ -34,12 +34,12 @@ function Homepage() {
           <SearchBar onSearch={handleSearch} />
           <div className="grid grid-cols-2 gap-3">
             <Button text="Browse" onClick={browseClick} />
-            <Button text="Nearby" onClick={nearbyClick} />
-            <Button
+            <Button text="Schedule" onClick={scheduleClick} />
+            {/* <Button
               text="My Schedule"
               onClick={scheduleClick}
-              className="col-span-2"
-            />
+              className="col-span-2 bg-gray-100"
+            /> */}
           </div>
         </div>
 
