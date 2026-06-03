@@ -1,10 +1,6 @@
-# Ed Fringe App
+# Edinburgh Fringe Scheduling App
 
 A React frontend for browsing and scheduling Edinburgh Festival Fringe events. Users can create an account, browse events, and build a personal schedule organised by date.
-
-## Live App
-
-https://ed-fringe-app.vercel.app
 
 ## Backend
 
