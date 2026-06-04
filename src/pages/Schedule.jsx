@@ -119,7 +119,19 @@ function Schedule() {
       <div className="flex flex-col gap-5 mt-15">
         <div className="text-center">
           <Heading text="My Schedule" />
-          <h1 className="mt-2">Hi {name}! Here's what you have saved!</h1>
+          <h1 className="mt-2 mb-2 text-gray-600">
+            Hi {name}!
+            {schedule.length === 0
+              ? " You haven't added anything to your schedule yet!"
+              : " Here's what you have saved!"}
+          </h1>
+          <Button
+            text="Browse events!"
+            className="bg-yellow-300 hover:bg-yellow-400"
+            onClick={(e) => {
+              navigate("/browse");
+            }}
+          />
         </div>
         <Heading text="Today" />
         <hr className="text-gray-400" />
