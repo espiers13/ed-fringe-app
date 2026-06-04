@@ -1,16 +1,22 @@
 import { useUser } from "../context/UserContext";
-import { getSchedule, getEventByCode } from "../api/api";
+import { getSchedule, getEventByCode, deleteAccount } from "../api/api";
 import { useEffect, useState } from "react";
 import Loading from "../components/Loading";
 import Heading from "../components/Heading";
 import ScheduleCard from "../components/ScheduleCard";
 import PastScheduleCard from "../components/PastScheduleCard";
+import Button from "../components/Button";
 
 function Schedule() {
   const { user, token } = useUser();
   const { name, id } = user;
   const [schedule, setSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showAccountDetails, setShowAccountDetails] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
+  const [showDeleteForm, setShowDeleteForm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [error, setError] = useState("");
 
   function fetchSchedule() {
     setIsLoading(true);
@@ -79,6 +85,32 @@ function Schedule() {
   const pastEvents = schedule.filter((event) =>
     isPast(event.performances[0].start),
   );
+
+  const handleAccount = () => {
+    setShowAccountDetails(!showAccountDetails);
+  };
+
+  const handleDeleteAccount = () => {
+    setShowDeleteForm(true);
+  };
+
+  const confirmDelete = () => {
+    deleteAccount(user.username, deletePassword)
+      .then((data) => {
+        if (data) {
+          logout();
+          navigate("/");
+        } else {
+          setError("Incorrect password. Please try again.");
+        }
+      })
+      .catch(() => {
+        setError("Incorrect password. Please try again.");
+      });
+  };
+  const handleChangePassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="mt-5 px-6 mx-auto">
@@ -192,6 +224,59 @@ function Schedule() {
                   onDelete={fetchSchedule}
                 />
               ))
+            )}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-5 mt-10">
+        <Button text="Account details" onClick={handleAccount} />
+        {showAccountDetails && (
+          <div className="grid gap-3 mt-3 p-4 border border-gray-200 rounded-xl bg-gray-50 grid-cols-2 items-center">
+            <p>Username:</p>
+            <p>{user.username}</p>
+            <p>Email:</p>
+            <p>{user.email}</p>
+
+            <Button
+              text={"Change password"}
+              type="submit"
+              className="bg-yellow-300 hover:bg-yellow-400 col-span-2"
+              onClick={handleChangePassword}
+            />
+            <Button
+              text={"Delete account"}
+              className="bg-red-300 hover:bg-red-400 col-span-2"
+              onClick={handleDeleteAccount}
+            />
+            {showDeleteForm && (
+              <div className="mt-3 p-4 border border-red-200 rounded-xl bg-red-50 flex flex-col gap-3 col-span-2">
+                <p className="text-sm font-bold text-red-600">
+                  Enter your password to confirm deletion:
+                </p>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 text-sm"
+                  placeholder="Password"
+                />
+                {error && <p className="text-red-600 text-xs">{error}</p>}
+                <div className="flex gap-2">
+                  <button
+                    onClick={confirmDelete}
+                    className="bg-red-400 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg"
+                  >
+                    Confirm Delete
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeleteForm(false)}
+                    className="bg-gray-200 hover:bg-gray-300 text-sm px-4 py-2 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         )}

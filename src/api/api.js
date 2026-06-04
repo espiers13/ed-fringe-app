@@ -101,3 +101,10 @@ export const addToSchedule = (user_id, token, code) => {
     .then(({ data }) => data)
     .catch((err) => console.log(err));
 };
+
+export const deleteAccount = (username, password) => {
+  return userApi
+    .post("/user/delete", { username, password })
+    .then(({ data }) => data)
+    .catch((err) => console.log(err));
+};
