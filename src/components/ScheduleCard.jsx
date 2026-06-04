@@ -20,6 +20,8 @@ function ScheduleCard({ event, onDelete }) {
 
   const formatDateTime = (dateString) => {
     return new Date(dateString).toLocaleString("en-GB", {
+      day: "numeric",
+      month: "short",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -39,8 +41,8 @@ function ScheduleCard({ event, onDelete }) {
 
   return (
     <div className="bg-neutral-100 flex flex-col p-1 rounded-xl border border-neutral-300 shadow-sm gap-2 overflow-hidden">
-      <div className="relative">
-        {image && <img className="w-full" src={image} alt={title} />}
+      <div className="flex justify-center">
+        {image && <img className="w-40" src={image} alt={title} />}
       </div>
 
       <span className="self-center text-xs bg-neutral-300 px-2 py-0.5 rounded-xl">
@@ -68,7 +70,9 @@ function ScheduleCard({ event, onDelete }) {
         </div>
         <hr className="my-1 border-neutral-400 border-0.5" />
         <p className="text-xs">
-          {formatDateTime(start)} - {formatDateTime(end)}
+          {formatDateTime(performances[0].start)}
+          {performances.length > 1 &&
+            ` – ${formatDateTime(performances[performances.length - 1].start)}`}
         </p>
         <hr className="my-1 border-neutral-400 border-0.5" />
         <p className="text-xs md:hidden">

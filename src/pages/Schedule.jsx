@@ -162,19 +162,13 @@ function Schedule() {
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="">
             {tomorrowEvents.length === 0 ? (
               <p className="text-sm text-neutral-500">
                 Nothing scheduled for tomorrow
               </p>
             ) : (
-              tomorrowEvents.map((event, index) => (
-                <ScheduleCard
-                  key={index}
-                  event={event}
-                  onDelete={fetchSchedule}
-                />
-              ))
+              <DailySchedule events={tomorrowEvents} onDelete={fetchSchedule} />
             )}
           </div>
         )}
