@@ -66,7 +66,18 @@ export const loginUser = (username, password) => {
   return userApi
     .post("/login", { username, password })
     .then(({ data }) => data)
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw err;
+    });
+};
+
+export const createUser = (name, username, email, password) => {
+  return userApi
+    .post("/signup", { name, username, email, password })
+    .then(({ data }) => data)
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const getSchedule = (user_id, token) => {
@@ -106,5 +117,7 @@ export const deleteAccount = (username, password) => {
   return userApi
     .post("/user/delete", { username, password })
     .then(({ data }) => data)
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw err;
+    });
 };

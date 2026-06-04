@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { getSchedule, getEventByCode, deleteAccount } from "../api/api";
 import { useEffect, useState } from "react";
@@ -8,7 +9,8 @@ import PastScheduleCard from "../components/PastScheduleCard";
 import Button from "../components/Button";
 
 function Schedule() {
-  const { user, token } = useUser();
+  const { user, token, logout } = useUser();
+  const navigate = useNavigate();
   const { name, id } = user;
   const [schedule, setSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +19,7 @@ function Schedule() {
   const [showDeleteForm, setShowDeleteForm] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [error, setError] = useState("");
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   function fetchSchedule() {
     setIsLoading(true);
@@ -95,19 +98,18 @@ function Schedule() {
   };
 
   const confirmDelete = () => {
+    setLoadingDelete(true);
     deleteAccount(user.username, deletePassword)
-      .then((data) => {
-        if (data) {
-          logout();
-          navigate("/");
-        } else {
-          setError("Incorrect password. Please try again.");
-        }
+      .then(() => {
+        logout();
+        navigate("/");
       })
       .catch(() => {
         setError("Incorrect password. Please try again.");
+        setLoadingDelete(false);
       });
   };
+
   const handleChangePassword = () => {
     setShowPassword(!showPassword);
   };
@@ -249,7 +251,13 @@ function Schedule() {
               onClick={handleDeleteAccount}
             />
             {showDeleteForm && (
-              <div className="mt-3 p-4 border border-red-200 rounded-xl bg-red-50 flex flex-col gap-3 col-span-2">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  confirmDelete();
+                }}
+                className="mt-3 p-4 border border-red-200 rounded-xl bg-red-50 flex flex-col gap-3 col-span-2"
+              >
                 <p className="text-sm font-bold text-red-600">
                   Enter your password to confirm deletion:
                 </p>
@@ -259,24 +267,26 @@ function Schedule() {
                   onChange={(e) => setDeletePassword(e.target.value)}
                   className="border border-gray-300 rounded-lg p-2 text-sm"
                   placeholder="Password"
+                  required
                 />
                 {error && <p className="text-red-600 text-xs">{error}</p>}
                 <div className="flex gap-2">
                   <button
-                    onClick={confirmDelete}
-                    className="bg-red-400 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg"
+                    type="submit"
+                    disabled={loadingDelete}
+                    className="bg-red-400 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg disabled:opacity-50"
                   >
-                    Confirm Delete
+                    {loadingDelete ? "Deleting..." : "Confirm Delete"}
                   </button>
-
                   <button
+                    type="button"
                     onClick={() => setShowDeleteForm(false)}
                     className="bg-gray-200 hover:bg-gray-300 text-sm px-4 py-2 rounded-lg"
                   >
                     Cancel
                   </button>
                 </div>
-              </div>
+              </form>
             )}
           </div>
         )}

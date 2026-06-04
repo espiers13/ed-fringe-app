@@ -1,48 +1,96 @@
 import { useState } from "react";
-import { loginUser } from "../api/api";
+import { createUser } from "../api/api";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import Loading from "../components/Loading";
 
-function Login() {
+function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const { login } = useUser();
 
   const navigate = useNavigate();
 
+  const validatePassword = (password) => {
+    if (!/[A-Z]/.test(password))
+      return "Password must contain at least one uppercase letter.";
+    if (!/[0-9]/.test(password))
+      return "Password must contain at least one number.";
+    if (!/[!@#$%^&*]/.test(password))
+      return "Password must contain at least one special character (!@#$%^&*).";
+    return null;
+  };
+
   function handleSubmit(e) {
     e.preventDefault();
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
     setIsLoading(true);
-    loginUser(username, password)
+    createUser(name, username, email, password)
       .then((data) => {
         login(data.user, data.token);
         navigate("/schedule");
       })
-      .catch((err) => {
-        if (err.response?.data?.msg === "User not found") {
-          setError("No account found with that username.");
-          setIsLoading(false);
-        } else if (err.response?.data?.msg === "Invalid password") {
-          setError("Incorrect password.");
-          setIsLoading(false);
-        } else {
-          setError("Something went wrong. Please try again.");
-          setIsLoading(false);
-        }
+      .catch(() => {
+        setError("Username or email already exists.");
+        setIsLoading(false);
       });
   }
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="text-center text-2xl font-bold tracking-tight">Login</h2>
+        <h2 className="text-center text-2xl font-bold tracking-tight">
+          Sign Up
+        </h2>
       </div>
 
       <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <div className="mt-2">
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="block w-full rounded-lg border border-gray-500 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
+            <div className="mt-2">
+              <input
+                id="name"
+                type="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="block w-full rounded-lg border border-gray-500 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
+              />
+            </div>
+          </div>
+
           <div>
             <label
               htmlFor="username"
@@ -78,6 +126,10 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-lg border border-gray-500 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
               />
+              <p className="text-xs text-gray-400 mt-1">
+                Must contain at least one uppercase letter, one number, and one
+                special character (!@#$%^&*)
+              </p>
             </div>
           </div>
 
@@ -86,24 +138,21 @@ function Login() {
             disabled={isLoading}
             className="flex w-full justify-center rounded-lg bg-yellow-300 hover:bg-yellow-400 px-3 py-2 text-sm font-semibold transition-colors disabled:opacity-50 disabled:hover:bg-yellow-300"
           >
-            Sign in
+            Create account
           </button>
         </form>
-        {error ? (
+        {error && (
           <p className="text-red-500 text-sm text-center mt-1">{error}</p>
-        ) : (
-          <p className="h-3"></p>
         )}
       </div>
-
       <button
         className="text-sm text-gray-500 text-center mt-4 hover:underline"
-        onClick={(e) => navigate("/signup")}
+        onClick={(e) => navigate("/login")}
       >
-        Don't have an account? Click here to sign up!
+        Already have an account? Click here to log in!
       </button>
     </div>
   );
 }
 
-export default Login;
+export default SignUp;

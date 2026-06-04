@@ -4,6 +4,7 @@ import Homepage from "./pages/Homepage";
 import Browse from "./pages/Browse";
 import Login from "./pages/Login";
 import Schedule from "./pages/Schedule";
+import SignUp from "./pages/SignUp";
 import { Routes, Route } from "react-router-dom";
 import { useUser } from "./context/UserContext";
 import { Navigate } from "react-router-dom";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route
             path="/schedule"
             element={
