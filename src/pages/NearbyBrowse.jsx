@@ -1,0 +1,141 @@
+import Heading from "../components/Heading";
+import { useState, useEffect } from "react";
+import Loading from "../components/Loading";
+import { getAllEvents } from "../api/api";
+import { useSearchParams } from "react-router-dom";
+import Button from "../components/Button";
+import DateFilter from "../components/DateFilter";
+import GenreFilter from "../components/GenreFilter";
+import ShowCard from "../components/ShowCard";
+
+function NearbyBrowse() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateFilter, setDateFilter] = useState("");
+  const [genreFilter, setGenreFilter] = useState("");
+  const [pendingDate, setPendingDate] = useState("");
+  const [pendingGenre, setPendingGenre] = useState("");
+
+  const fakeLocation = { latitude: 55.9533, longitude: -3.1883 };
+
+  const page = parseInt(searchParams.get("page") || "1");
+
+  const isInEdinburgh = (lat, lon) => {
+    return lat >= 55.9 && lat <= 56.0 && lon >= -3.3 && lon <= -3.1;
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log("got position");
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ latitude, longitude });
+
+        if (!isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude)) {
+          setIsLoading(false);
+          return;
+        }
+        console.log(
+          "about to fetch",
+          isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude),
+        );
+        getAllEvents(
+          page,
+          dateFilter,
+          genreFilter,
+          fakeLocation.latitude,
+          fakeLocation.longitude,
+          "1miles",
+        ).then((data) => {
+          setEvents(data);
+          setIsLoading(false);
+        });
+      },
+      (error) => {
+        console.log("Location error:", error);
+        setIsLoading(false);
+      },
+    );
+  }, [page, dateFilter, genreFilter]);
+
+  function handleFilters(e) {
+    e.preventDefault();
+    setDateFilter(pendingDate);
+    setGenreFilter(pendingGenre);
+    setShowFilters(false);
+  }
+
+  function handleNextPage() {
+    setSearchParams({ page: page + 1 });
+  }
+
+  function handlePrevPage() {
+    setSearchParams({ page: page - 1 });
+  }
+
+  return (
+    <div className="mt-5 px-6 max-w-6xl mx-auto">
+      <div className="flex flex-col gap-5 mt-15">
+        <div className="text-center">
+          <Heading text="Nearby" />
+          <p className="text-gray-600 text-sm mt-2">
+            Browse all shows near you right now, or filter by genre or date!
+          </p>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <Loading />
+      ) : !currentLocation ? (
+        <Loading />
+      ) : isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude) ? (
+        <div>
+          <div className="flex flex-col mt-3">
+            <Button
+              text={showFilters ? "Hide Filters" : "Filters"}
+              onClick={() => setShowFilters((prev) => !prev)}
+              className="bg-gray-100"
+            />
+            {showFilters && (
+              <form onSubmit={handleFilters}>
+                <div className="flex flex-col gap-3 mt-3 p-4 border border-gray-200 rounded-xl bg-gray-50">
+                  <DateFilter setDateFilter={setPendingDate} />
+                  <GenreFilter setGenreFilter={setPendingGenre} />
+                  <Button
+                    text={"Set filters"}
+                    type="submit"
+                    className="bg-yellow-300 hover:bg-yellow-400"
+                  />
+                </div>
+              </form>
+            )}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5">
+            {events.map((event, index) => (
+              <ShowCard key={index} event={event} filter={dateFilter} />
+            ))}
+          </div>
+          <div className="flex gap-3 justify-center mt-5">
+            <Button text="<" onClick={handlePrevPage} disabled={page === 1} />
+            <span className="self-center">Page {page}</span>
+            <Button
+              text=">"
+              onClick={handleNextPage}
+              disabled={events.length < 25}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="text-center mt-10">
+          <p>Sorry! This feature is only available if you are in Edinburgh!</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default NearbyBrowse;

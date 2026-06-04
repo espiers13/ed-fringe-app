@@ -22,6 +22,7 @@ function Menu() {
     { label: "Home", path: "/" },
     { label: "Browse", path: "/browse" },
     { label: "Schedule", path: "/schedule" },
+    { label: "Nearby Events", path: "/nearbybrowse" },
     ...(user
       ? [{ label: "Logout", action: handleLogout }]
       : [{ label: "Login", path: "/login" }]),

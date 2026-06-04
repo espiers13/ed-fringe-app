@@ -17,16 +17,30 @@ function signUrl(path) {
   return `${path}&signature=${signature}`;
 }
 
-export const getAllEvents = (page = 1, date = "", genre = "") => {
+export const getAllEvents = (
+  page = 1,
+  date = "",
+  genre = "",
+  lat = "",
+  lon = "",
+  distance = "",
+) => {
   let path = `/events?festival=demofringe&from=${page}&size=25`;
+
+  console.log(path);
 
   if (date) {
     path += `&date_from=${encodeURIComponent(date + " 00:00:00")}`;
     path += `&date_to=${encodeURIComponent(date + " 23:59:59")}`;
   }
   if (genre) path += `&genre=${encodeURIComponent(genre)}`;
+  if (lat && lon) {
+    path += `&lat=${lat}&lon=${lon}`;
+    if (distance) path += `&distance=${distance}`;
+  }
   path += `&key=${API_KEY}`;
   const signedUrl = signUrl(path);
+
   return festivalApi
     .get(signedUrl)
     .then(({ data }) => data ?? [])
