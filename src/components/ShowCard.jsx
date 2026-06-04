@@ -3,7 +3,7 @@ import { useState } from "react";
 import { addToSchedule, removeFromSchedule } from "../api/api";
 import { useUser } from "../context/UserContext";
 
-function ShowCard({ event }) {
+function ShowCard({ event, filter }) {
   const [isAdded, setIsAdded] = useState(false);
   const [message, setMessage] = useState("");
   const { user, token } = useUser();
@@ -21,17 +21,21 @@ function ShowCard({ event }) {
     code,
   } = event;
 
-  const { start } = performances[0];
+  // const { start } = performances[0];
 
-  const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString("en-GB", {
+  const formatTime = (dateString) =>
+    new Date(dateString).toLocaleString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+  const formatDateTime = (dateString) =>
+    new Date(dateString).toLocaleString("en-GB", {
       day: "numeric",
       month: "short",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 
   function seeMore() {
@@ -112,7 +116,21 @@ function ShowCard({ event }) {
           </p>
         </div>
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
-        <p className="text-xs">{formatDateTime(start)}</p>
+        <div className="flex flex-col gap-0.5">
+          {filter === "today" ? (
+            performances.map((p, i) => (
+              <p key={i} className="text-xs">
+                {formatTime(p.start)}
+              </p>
+            ))
+          ) : (
+            <p className="text-xs">
+              {formatDateTime(performances[0].start)}
+              {performances.length > 1 &&
+                ` – ${formatDateTime(performances[performances.length - 1].start)}`}
+            </p>
+          )}
+        </div>
         <hr className="my-1 border-neutral-400 border-0.5" />
         <p className="text-xs md:hidden">
           {performance_space.name.replace("DEMO: ", "")}

@@ -17,9 +17,10 @@ function Browse() {
   const [isSearch, setIsSearch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [dateFilter, setDateFilter] = useState(null);
-  const [genreFilter, setGenreFilter] = useState(null);
-  const [filters, setFilters] = useState(false);
+  const [dateFilter, setDateFilter] = useState("");
+  const [genreFilter, setGenreFilter] = useState("");
+  const [pendingDate, setPendingDate] = useState("");
+  const [pendingGenre, setPendingGenre] = useState("");
 
   const page = parseInt(searchParams.get("page") || "1");
   const searchQuery = searchParams.get("query") || "";
@@ -40,7 +41,7 @@ function Browse() {
       .catch((err) => {
         console.log("error:", err);
       });
-  }, [page, searchQuery, filters]);
+  }, [page, searchQuery, dateFilter, genreFilter]);
 
   function handleSearch(query) {
     setSearchParams({ query, page: 1 });
@@ -48,9 +49,10 @@ function Browse() {
 
   function handleFilters(e) {
     e.preventDefault();
-    setFilters(!filters);
+    setDateFilter(pendingDate);
+    setGenreFilter(pendingGenre);
+    setShowFilters(false);
   }
-
   function handleNextPage() {
     setSearchParams({ query: searchQuery, page: page + 1 });
   }
@@ -80,8 +82,8 @@ function Browse() {
           {showFilters && (
             <form onSubmit={handleFilters}>
               <div className="flex flex-col gap-3 mt-3 p-4 border border-gray-200 rounded-xl bg-gray-50">
-                <DateFilter setDateFilter={setDateFilter} />
-                <GenreFilter setGenreFilter={setGenreFilter} />
+                <DateFilter setDateFilter={setPendingDate} />
+                <GenreFilter setGenreFilter={setPendingGenre} />
                 <Button
                   text={"Set filters"}
                   type="submit"
@@ -106,12 +108,14 @@ function Browse() {
               </p>
             </div>
           )}
-          {events.length > 0 && (
+          {events.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5">
               {events.map((event, index) => (
-                <ShowCard key={index} event={event} />
+                <ShowCard key={index} event={event} filter={dateFilter} />
               ))}
             </div>
+          ) : (
+            <p className="text-center text-gray-500 mt-10">0 events found.</p>
           )}
           <div className="flex gap-3 justify-center mt-5">
             <Button text="<" onClick={handlePrevPage} disabled={page === 1} />

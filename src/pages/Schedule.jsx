@@ -7,6 +7,7 @@ import Heading from "../components/Heading";
 import ScheduleCard from "../components/ScheduleCard";
 import PastScheduleCard from "../components/PastScheduleCard";
 import Button from "../components/Button";
+import DailySchedule from "../components/DailySchedule";
 
 function Schedule() {
   const { user, token, logout } = useUser();
@@ -37,7 +38,9 @@ function Schedule() {
     fetchSchedule();
   }, []);
 
-  const today = new Date();
+  // const today = new Date();
+
+  const today = new Date(2026, 7, 19); // 19th August 2026
 
   const isToday = (dateString) => {
     const date = new Date(dateString);
@@ -70,23 +73,25 @@ function Schedule() {
   };
 
   const isPast = (dateString) => {
-    return new Date(dateString) < today;
+    const startOfToday = new Date(today);
+    startOfToday.setHours(0, 0, 0, 0);
+    return new Date(dateString) < startOfToday;
   };
 
   const todayEvents = schedule.filter((event) =>
-    isToday(event.performances[0].start),
+    event.performances.some((p) => isToday(p.start)),
   );
   const tomorrowEvents = schedule.filter((event) =>
-    isTomorrow(event.performances[0].start),
+    event.performances.some((p) => isTomorrow(p.start)),
   );
   const thisWeekEvents = schedule.filter((event) =>
-    isThisWeek(event.performances[0].start),
+    event.performances.some((p) => isThisWeek(p.start)),
   );
   const upcomingEvents = schedule.filter((event) =>
-    isUpcoming(event.performances[0].start),
+    event.performances.some((p) => isUpcoming(p.start)),
   );
   const pastEvents = schedule.filter((event) =>
-    isPast(event.performances[0].start),
+    event.performances.every((p) => isPast(p.start)),
   );
 
   const handleAccount = () => {
@@ -133,24 +138,20 @@ function Schedule() {
             }}
           />
         </div>
+
         <Heading text="Today" />
+
         <hr className="text-gray-400" />
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="">
             {todayEvents.length === 0 ? (
               <p className="text-sm text-neutral-500">
                 Nothing scheduled for today
               </p>
             ) : (
-              todayEvents.map((event, index) => (
-                <ScheduleCard
-                  key={index}
-                  event={event}
-                  onDelete={fetchSchedule}
-                />
-              ))
+              <DailySchedule events={todayEvents} onDelete={fetchSchedule} />
             )}
           </div>
         )}
