@@ -1,7 +1,10 @@
 import { useState } from "react";
 
-function DateFilter({ setDateFilter }) {
-  const [selected, setSelected] = useState("");
+function DateFilter({ setDateFilter, pendingDate = "" }) {
+  const today = new Date().toISOString().split("T")[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+
+  const [selected, setSelected] = useState(pendingDate === today ? today : "");
   const [pickedDate, setPickedDate] = useState("");
 
   function handleChange(e) {
@@ -9,9 +12,6 @@ function DateFilter({ setDateFilter }) {
     setDateFilter(e.target.value);
     if (e.target.value !== "pick") setPickedDate("");
   }
-
-  const today = new Date().toISOString().split("T")[0];
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
   return (
     <div>

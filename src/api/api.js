@@ -27,8 +27,6 @@ export const getAllEvents = (
 ) => {
   let path = `/events?festival=demofringe&from=${page}&size=25`;
 
-  console.log(path);
-
   if (date) {
     path += `&date_from=${encodeURIComponent(date + " 00:00:00")}`;
     path += `&date_to=${encodeURIComponent(date + " 23:59:59")}`;

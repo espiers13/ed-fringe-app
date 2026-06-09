@@ -7,6 +7,8 @@ import Button from "../components/Button";
 import DateFilter from "../components/DateFilter";
 import GenreFilter from "../components/GenreFilter";
 import ShowCard from "../components/ShowCard";
+import Switch from "../components/Switch";
+import Map from "../components/Map";
 
 function NearbyBrowse() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,10 +16,14 @@ function NearbyBrowse() {
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [dateFilter, setDateFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [genreFilter, setGenreFilter] = useState("");
   const [pendingDate, setPendingDate] = useState("");
   const [pendingGenre, setPendingGenre] = useState("");
+  const [view, setView] = useState("list");
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const fakeLocation = { latitude: 55.9533, longitude: -3.1883 };
 
@@ -31,18 +37,12 @@ function NearbyBrowse() {
     setIsLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log("got position");
         const { latitude, longitude } = position.coords;
         setCurrentLocation({ latitude, longitude });
-
         if (!isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude)) {
           setIsLoading(false);
           return;
         }
-        console.log(
-          "about to fetch",
-          isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude),
-        );
         getAllEvents(
           page,
           dateFilter,
@@ -52,6 +52,7 @@ function NearbyBrowse() {
           "1miles",
         ).then((data) => {
           setEvents(data);
+          setIsDisabled(data.length === 0);
           setIsLoading(false);
         });
       },
@@ -83,7 +84,7 @@ function NearbyBrowse() {
         <div className="text-center">
           <Heading text="Nearby" />
           <p className="text-gray-600 text-sm mt-2">
-            Browse all shows near you right now, or filter by genre or date!
+            Browse shows on near you today!
           </p>
         </div>
       </div>
@@ -94,16 +95,44 @@ function NearbyBrowse() {
         <Loading />
       ) : isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude) ? (
         <div>
-          <div className="flex flex-col mt-3">
-            <Button
-              text={showFilters ? "Hide Filters" : "Filters"}
-              onClick={() => setShowFilters((prev) => !prev)}
-              className="bg-gray-100"
-            />
-            {showFilters && (
+          <div className="flex mt-3 gap-2">
+            <div className="w-3/4">
+              <Button
+                text={showFilters ? "Hide Filters" : "Filters"}
+                onClick={() => setShowFilters((prev) => !prev)}
+                className="bg-gray-100 w-full"
+                disabled={isDisabled}
+              />
+            </div>
+            <div className="w-1/4 flex items-center">
+              <Switch setView={setView} isDisabled={isDisabled} />
+            </div>
+          </div>
+          {showFilters && (
+            <form onSubmit={handleFilters}>
+              <div className="flex flex-col gap-3 mt-3 p-4 border border-gray-200 rounded-xl bg-gray-50">
+                <DateFilter setDateFilter={setPendingDate} />
+                <GenreFilter setGenreFilter={setPendingGenre} />
+                <Button
+                  text={"Set filters"}
+                  type="submit"
+                  className="bg-yellow-300 hover:bg-yellow-400"
+                />
+              </div>
+            </form>
+          )}
+
+          {events.length === 0 ? (
+            <div>
+              <p className="text-center text-gray-500 mt-10 mb-3">
+                No events near you! Try a different day or genre.
+              </p>
               <form onSubmit={handleFilters}>
                 <div className="flex flex-col gap-3 mt-3 p-4 border border-gray-200 rounded-xl bg-gray-50">
-                  <DateFilter setDateFilter={setPendingDate} />
+                  <DateFilter
+                    setDateFilter={setPendingDate}
+                    pendingDate={dateFilter}
+                  />
                   <GenreFilter setGenreFilter={setPendingGenre} />
                   <Button
                     text={"Set filters"}
@@ -112,22 +141,30 @@ function NearbyBrowse() {
                   />
                 </div>
               </form>
-            )}
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5">
-            {events.map((event, index) => (
-              <ShowCard key={index} event={event} filter={dateFilter} />
-            ))}
-          </div>
-          <div className="flex gap-3 justify-center mt-5">
-            <Button text="<" onClick={handlePrevPage} disabled={page === 1} />
-            <span className="self-center">Page {page}</span>
-            <Button
-              text=">"
-              onClick={handleNextPage}
-              disabled={events.length < 25}
-            />
-          </div>
+            </div>
+          ) : view === "list" ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5">
+              {events.map((event, index) => (
+                <ShowCard key={index} event={event} filter={dateFilter} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5">
+              <Map />
+            </div>
+          )}
+
+          {view === "list" && (
+            <div className="flex gap-3 justify-center mt-5">
+              <Button text="<" onClick={handlePrevPage} disabled={page === 1} />
+              <span className="self-center">Page {page}</span>
+              <Button
+                text=">"
+                onClick={handleNextPage}
+                disabled={events.length < 25}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center mt-10">
