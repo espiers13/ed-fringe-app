@@ -16,9 +16,7 @@ function NearbyBrowse() {
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [dateFilter, setDateFilter] = useState(
-    new Date().toISOString().split("T")[0],
-  );
+  const [dateFilter, setDateFilter] = useState("");
   const [genreFilter, setGenreFilter] = useState("");
   const [pendingDate, setPendingDate] = useState("");
   const [pendingGenre, setPendingGenre] = useState("");
@@ -50,6 +48,7 @@ function NearbyBrowse() {
           fakeLocation.latitude,
           fakeLocation.longitude,
           "1miles",
+          "75",
         ).then((data) => {
           setEvents(data);
           setIsDisabled(data.length === 0);
@@ -150,7 +149,7 @@ function NearbyBrowse() {
             </div>
           ) : (
             <div className="mt-5">
-              <Map />
+              <Map events={events} currentLocation={fakeLocation} />
             </div>
           )}
 
@@ -161,7 +160,7 @@ function NearbyBrowse() {
               <Button
                 text=">"
                 onClick={handleNextPage}
-                disabled={events.length < 25}
+                disabled={events.length < 75}
               />
             </div>
           )}

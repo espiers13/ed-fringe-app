@@ -21,8 +21,6 @@ function ShowCard({ event, filter }) {
     code,
   } = event;
 
-  // const { start } = performances[0];
-
   const formatTime = (dateString) =>
     new Date(dateString).toLocaleString("en-GB", {
       hour: "2-digit",
@@ -39,7 +37,7 @@ function ShowCard({ event, filter }) {
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 
   function seeMore() {
-    window.location.href = website;
+    window.open(website, "_blank");
   }
 
   function showMessage(text) {
@@ -63,7 +61,7 @@ function ShowCard({ event, filter }) {
   return (
     <div className="bg-neutral-100 flex flex-col p-3 rounded-xl border border-neutral-300 shadow-sm gap-2 overflow-hidden">
       <div className="relative">
-        {image && <img className="w-full" src={image} alt={title} />}
+        {image && <img className="w-50 mx-auto" src={image} alt={title} />}
         {message && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg animate-fade">
             <p className="text-white font-bold text-sm">{message}</p>

@@ -24,8 +24,9 @@ export const getAllEvents = (
   lat = "",
   lon = "",
   distance = "",
+  size = "25",
 ) => {
-  let path = `/events?festival=demofringe&from=${page}&size=25`;
+  let path = `/events?festival=demofringe&from=${page}&size=${size}`;
 
   if (date) {
     path += `&date_from=${encodeURIComponent(date + " 00:00:00")}`;
