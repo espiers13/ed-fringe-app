@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { getSchedule, getEventByCode, deleteAccount } from "../api/api";
+import {
+  getSchedule,
+  getEventByCode,
+  deleteAccount,
+  changePassword,
+} from "../api/api";
 import { useEffect, useState } from "react";
 import Loading from "../components/Loading";
 import Heading from "../components/Heading";
@@ -16,12 +21,18 @@ function Schedule() {
   const [schedule, setSchedule] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showAccountDetails, setShowAccountDetails] = useState(false);
-  const [changePassword, setChangePassword] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [showDeleteForm, setShowDeleteForm] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [error, setError] = useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loadingPassword, setLoadingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   function fetchSchedule() {
     setIsLoading(true);
@@ -51,9 +62,7 @@ function Schedule() {
     );
   }, []);
 
-  // const today = new Date();
-
-  const today = new Date(2026, 7, 19); // 19th August 2026
+  const today = new Date();
 
   const isToday = (dateString) => {
     const date = new Date(dateString);
@@ -128,8 +137,27 @@ function Schedule() {
       });
   };
 
+  const handlePassword = () => {
+    setShowPasswordForm(!showPasswordForm);
+  };
+
   const handleChangePassword = () => {
-    setShowPassword(!showPassword);
+    if (newPassword !== confirmPassword) return;
+    setLoadingPassword(true);
+    changePassword(user.username, currentPassword, newPassword)
+      .then(() => {
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setShowPasswordForm(false);
+        setLoadingPassword(false);
+        setPasswordSuccess(true);
+        setTimeout(() => setPasswordSuccess(false), 3000);
+      })
+      .catch(() => {
+        setPasswordError("Incorrect password. Please try again.");
+        setLoadingPassword(false);
+      });
   };
 
   return (
@@ -263,17 +291,75 @@ function Schedule() {
             <p>{user.username}</p>
             <p>Email:</p>
             <p>{user.email}</p>
-
+            {passwordSuccess && (
+              <p className="text-green-600 text-xs col-span-2">
+                Password changed successfully!
+              </p>
+            )}
             <Button
               text={"Change password"}
               type="submit"
               className="bg-yellow-300 hover:bg-yellow-400 col-span-2"
-              onClick={handleChangePassword}
+              onClick={handlePassword}
             />
+            {showPasswordForm && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleChangePassword();
+                }}
+                className="mt-3 p-4 border border-neutral-200 rounded-xl bg-neutral-50 flex flex-col gap-3 col-span-2"
+              >
+                <p className="text-sm">Current password</p>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 text-sm"
+                  placeholder="Password"
+                  required
+                />
+                <p className="text-sm">New password</p>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 text-sm"
+                  placeholder="Password"
+                  required
+                />
+                <p className="text-sm">Confirm new password</p>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 text-sm"
+                  placeholder="Confirm password"
+                  required
+                />
+                {confirmPassword && newPassword !== confirmPassword && (
+                  <p className="text-red-500 text-xs">Passwords do not match</p>
+                )}
+                {passwordError && (
+                  <p className="text-red-500 text-xs">{passwordError}</p>
+                )}
+
+                <Button
+                  text={
+                    loadingPassword
+                      ? "Changing password..."
+                      : "Set new password"
+                  }
+                  className="bg-yellow-300 hover:bg-yellow-400"
+                  onClick={handleChangePassword}
+                />
+              </form>
+            )}
             <Button
               text={"Delete account"}
               className="bg-red-300 hover:bg-red-400 col-span-2"
               onClick={handleDeleteAccount}
+              disabled={loadingPassword}
             />
             {showDeleteForm && (
               <form

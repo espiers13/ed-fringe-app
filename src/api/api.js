@@ -138,3 +138,18 @@ export const deleteAccount = (username, password) => {
       throw err;
     });
 };
+
+export const changePassword = (username, currentPassword, newPassword) => {
+  return userApi
+    .patch(`/user/password`, {
+      username,
+      currentPassword,
+      newPassword,
+    })
+    .then(({ data }) => {
+      return data;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};
