@@ -1,7 +1,8 @@
 import { removeFromSchedule } from "../api/api";
 import { useUser } from "../context/UserContext";
+import getDistanceMiles from "../utils/getDistanceMiles";
 
-function DailySchedule({ events, onDelete }) {
+function DailySchedule({ events, onDelete, currentLocation = null }) {
   const { user, token } = useUser();
   if (!events || events.length === 0) {
     return <p className="text-sm text-neutral-500">Nothing scheduled</p>;
@@ -69,9 +70,33 @@ function DailySchedule({ events, onDelete }) {
     });
   };
 
+  const nextEvent = events.reduce((soonest, event) => {
+    const start = new Date(event.performances[0].start);
+    return start < new Date(soonest.performances[0].start) ? event : soonest;
+  });
+
+  const miles = currentLocation
+    ? getDistanceMiles(currentLocation, nextEvent.venue.position)
+    : null;
+
   return (
     <div className="overflow-x-auto">
-      <div className="flex" style={{ minWidth: "400px" }}>
+      {currentLocation && (
+        <div>
+          <p className="text-xs italic">
+            Your next event is {miles} away |{" "}
+            <a
+              href={`https://www.google.com/maps/dir/${currentLocation.latitude},${currentLocation.longitude}/${nextEvent.venue.position.lat},${nextEvent.venue.position.lon}`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs hover:underline"
+            >
+              Get directions
+            </a>
+          </p>
+        </div>
+      )}
+      <div className="flex mt-3" style={{ minWidth: "400px" }}>
         <div className="shrink-0 w-12">
           {hours.map((h) => (
             <div
@@ -134,18 +159,14 @@ function DailySchedule({ events, onDelete }) {
                   >
                     ✕
                   </button>
-                  <p className="font-medium truncate">
-                    {ev.title.replace("FAKE ", "")}
-                  </p>
+                  <p className="font-medium truncate">{ev.title}</p>
                   <p className="truncate opacity-75 text-[10px]">
                     {startH}:{startM}–{endH}:{endM}
                   </p>
                   <p className="truncate opacity-75 text-[10px]">
-                    {ev.venue.name.replace("DEMO: ", "")}
+                    {ev.venue.name}
                   </p>
-                  <p className="truncate opacity-75 text-[10px]">
-                    {ev.artist.replace("DEMO: ", "")}
-                  </p>
+                  <p className="truncate opacity-75 text-[10px]">{ev.artist}</p>
                 </div>
               );
             }),

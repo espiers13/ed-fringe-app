@@ -20,6 +20,7 @@ function Schedule() {
   const [showDeleteForm, setShowDeleteForm] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [error, setError] = useState("");
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   function fetchSchedule() {
@@ -36,6 +37,18 @@ function Schedule() {
 
   useEffect(() => {
     fetchSchedule();
+  }, []);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ latitude, longitude });
+      },
+      (error) => {
+        console.log("Location error:", error);
+      },
+    );
   }, []);
 
   // const today = new Date();
@@ -121,7 +134,7 @@ function Schedule() {
 
   return (
     <div className="mt-5 px-6 mx-auto">
-      <div className="flex flex-col gap-5 mt-15">
+      <div className="flex flex-col gap-3 mt-15">
         <div className="text-center">
           <Heading text="My Schedule" />
           <h1 className="mt-2 mb-2 text-gray-600">
@@ -139,26 +152,31 @@ function Schedule() {
           />
         </div>
 
+        <hr className="text-gray-400" />
         <Heading text="Today" />
 
-        <hr className="text-gray-400" />
+        {/* <hr className="text-gray-400" /> */}
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="">
+          <div>
             {todayEvents.length === 0 ? (
               <p className="text-sm text-neutral-500">
                 Nothing scheduled for today
               </p>
             ) : (
-              <DailySchedule events={todayEvents} onDelete={fetchSchedule} />
+              <DailySchedule
+                events={todayEvents}
+                onDelete={fetchSchedule}
+                currentLocation={currentLocation}
+              />
             )}
           </div>
         )}
 
         <hr className="text-gray-400" />
         <Heading text="Tomorrow" />
-        <hr className="text-gray-400" />
+        {/* <hr className="text-gray-400" /> */}
         {isLoading ? (
           <Loading />
         ) : (
@@ -175,7 +193,7 @@ function Schedule() {
 
         <hr className="text-gray-400" />
         <Heading text="This week" />
-        <hr className="text-gray-400" />
+        {/* <hr className="text-gray-400" /> */}
         {isLoading ? (
           <Loading />
         ) : (
@@ -198,7 +216,7 @@ function Schedule() {
 
         <hr className="text-gray-400" />
         <Heading text="Upcoming" />
-        <hr className="text-gray-400" />
+        {/* <hr className="text-gray-400" /> */}
         {isLoading ? (
           <Loading />
         ) : (
@@ -218,7 +236,7 @@ function Schedule() {
         )}
         <hr className="text-gray-400" />
         <Heading text="Past" />
-        <hr className="text-gray-400" />
+        {/* <hr className="text-gray-400" /> */}
         {isLoading ? (
           <Loading />
         ) : (

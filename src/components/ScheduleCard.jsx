@@ -49,23 +49,17 @@ function ScheduleCard({ event, onDelete }) {
         {genre}
       </span>
 
-      <h1 className="font-bold text-black-500 text-center">
-        {title.replace("FAKE ", "")}
-      </h1>
-      <p className="text-xs italic text-center">
-        {artist.replace("DEMO: ", "")}
-      </p>
+      <h1 className="font-bold text-black-500 text-center">{title}</h1>
+      <p className="text-xs italic text-center">{artist}</p>
       <a
         className="bg-neutral-200 p-2 rounded-sm mt-auto"
         href={venue.web_address}
       >
         <div className="flex gap-0.5 items-center">
           <p className="font-bold text-sm">{venue.code}</p>
-          <p className="text-xs line-clamp-1">
-            {venue.name.replace("DEMO: ", "")}
-          </p>
+          <p className="text-xs line-clamp-1">{venue.name}</p>
           <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
-            {performance_space.name.replace("DEMO: ", "")}
+            {performance_space.name}
           </p>
         </div>
         <hr className="my-1 border-neutral-400 border-0.5" />
@@ -75,9 +69,7 @@ function ScheduleCard({ event, onDelete }) {
             ` – ${formatDateTime(performances[performances.length - 1].start)}`}
         </p>
         <hr className="my-1 border-neutral-400 border-0.5" />
-        <p className="text-xs md:hidden">
-          {performance_space.name.replace("DEMO: ", "")}
-        </p>
+        <p className="text-xs md:hidden">{performance_space.name}</p>
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
         <div className="flex gap-2 items-center">
           <p className="text-xs">Accessibility:</p>

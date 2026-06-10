@@ -90,27 +90,19 @@ function ShowCard({ event, filter }) {
         {genre}
       </span>
 
-      <p className="font-bold text-black-500 text-center text-sm">
-        {title.replace("FAKE ", "")}
-      </p>
-      <p className="text-xs italic text-center">
-        {artist.replace("DEMO: ", "")}
-      </p>
-      <p className="text-xs line-clamp-10 min-w-0">
-        {description.replace("DEMO: ", "")}
-      </p>
+      <p className="font-bold text-black-500 text-center text-sm">{title}</p>
+      <p className="text-xs italic text-center">{artist}</p>
+      <p className="text-xs line-clamp-10 min-w-0">{description}</p>
       <a
         className="bg-neutral-200 p-2 rounded-sm mt-auto"
         href={venue.web_address}
       >
         <div className="flex gap-0.5 items-center">
           <p className="font-bold text-sm">{venue.code}</p>
-          <p className="text-xs line-clamp-1">
-            {venue.name.replace("DEMO: ", "")}
-          </p>
+          <p className="text-xs line-clamp-1">{venue.name}</p>
 
           <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
-            {performance_space.name.replace("DEMO: ", "")}
+            {performance_space.name}
           </p>
         </div>
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
@@ -130,9 +122,7 @@ function ShowCard({ event, filter }) {
           )}
         </div>
         <hr className="my-1 border-neutral-400 border-0.5" />
-        <p className="text-xs md:hidden">
-          {performance_space.name.replace("DEMO: ", "")}
-        </p>
+        <p className="text-xs md:hidden">{performance_space.name}</p>
 
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
         <div className="flex gap-2 items-center">
