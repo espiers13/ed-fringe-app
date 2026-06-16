@@ -3,12 +3,14 @@ import { loginUser } from "../api/api";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import ForgotPassword from "../components/ForgotPassword";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [forgotPasswordPopup, setForgotPasswordPopup] = useState(true);
   const { login } = useUser();
 
   const navigate = useNavigate();
@@ -33,6 +35,11 @@ function Login() {
           setIsLoading(false);
         }
       });
+  }
+
+  function handleForgotPassword(e) {
+    e.preventDefault();
+    setForgotPasswordPopup(true);
   }
 
   return (
@@ -79,6 +86,14 @@ function Login() {
                 className="block w-full rounded-lg border border-gray-500 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
               />
             </div>
+            <div className="text-end mt-2 text-xs">
+              <button
+                className="hover:underline text-gray-500"
+                onClick={handleForgotPassword}
+              >
+                Forgot your password?
+              </button>
+            </div>
           </div>
 
           <button
@@ -102,6 +117,9 @@ function Login() {
       >
         Don't have an account? Click here to sign up!
       </button>
+      {forgotPasswordPopup && (
+        <ForgotPassword setForgotPasswordPopup={setForgotPasswordPopup} />
+      )}
     </div>
   );
 }

@@ -153,3 +153,21 @@ export const changePassword = (username, currentPassword, newPassword) => {
       throw err;
     });
 };
+
+export const forgotPassword = (email) => {
+  return userApi
+    .post("/forgot-password", { email })
+    .then(({ data }) => data)
+    .catch((err) => {
+      throw err;
+    });
+};
+
+export const resetPassword = (token, newPassword) => {
+  return userApi
+    .post("/reset-password", { token, newPassword })
+    .then(({ data }) => data)
+    .catch((err) => {
+      throw err;
+    });
+};

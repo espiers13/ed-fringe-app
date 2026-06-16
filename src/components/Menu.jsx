@@ -14,7 +14,7 @@ function Menu() {
 
   function handleLogout() {
     logout();
-    navigate("/");
+    navigate("/login");
     setIsOpen(false);
   }
 
