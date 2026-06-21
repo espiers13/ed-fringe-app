@@ -23,8 +23,6 @@ function NearbyBrowse() {
   const [view, setView] = useState("list");
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const fakeLocation = { latitude: 55.9533, longitude: -3.1883 };
-
   const page = parseInt(searchParams.get("page") || "1");
 
   const isInEdinburgh = (lat, lon) => {
@@ -37,7 +35,7 @@ function NearbyBrowse() {
       (position) => {
         const { latitude, longitude } = position.coords;
         setCurrentLocation({ latitude, longitude });
-        if (!isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude)) {
+        if (!isInEdinburgh(latitude, longitude)) {
           setIsLoading(false);
           return;
         }
@@ -45,8 +43,8 @@ function NearbyBrowse() {
           page,
           dateFilter,
           genreFilter,
-          fakeLocation.latitude,
-          fakeLocation.longitude,
+          latitude,
+          longitude,
           "1miles",
           "75",
         ).then((data) => {
@@ -92,7 +90,7 @@ function NearbyBrowse() {
         <Loading />
       ) : !currentLocation ? (
         <Loading />
-      ) : isInEdinburgh(fakeLocation.latitude, fakeLocation.longitude) ? (
+      ) : isInEdinburgh(currentLocation.latitude, currentLocation.longitude) ? (
         <div>
           <div className="flex mt-3 gap-2">
             <div className="w-3/4">
@@ -149,7 +147,7 @@ function NearbyBrowse() {
             </div>
           ) : (
             <div className="mt-5">
-              <Map events={events} currentLocation={fakeLocation} />
+              <Map events={events} currentLocation={currentLocation} />
             </div>
           )}
 
