@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/festival-api/:path*",
+      "destination": "https://api.edinburghfestivalcity.com/:path*"
+    }
+  ]
+}
