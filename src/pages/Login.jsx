@@ -10,7 +10,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [forgotPasswordPopup, setForgotPasswordPopup] = useState(true);
+  const [forgotPasswordPopup, setForgotPasswordPopup] = useState(false);
   const { login } = useUser();
 
   const navigate = useNavigate();
