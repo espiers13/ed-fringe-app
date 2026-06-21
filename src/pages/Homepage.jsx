@@ -44,7 +44,7 @@ function Homepage() {
         </div>
 
         <img
-          src="public/stock-img-1.jpg"
+          src="/stock-img-1.jpg"
           className="rounded-xl w-full object-cover"
         />
       </div>
