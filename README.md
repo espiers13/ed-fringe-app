@@ -58,6 +58,23 @@ VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 npm run dev
 ```
 
+## Project Structure
+ 
+```
+src/
+├── api/             # Axios calls to the Ed Fringe BE and Festivals API
+├── assets/          # Static icons (list/map view toggles)
+├── components/       # Reusable UI: Header, Footer, Map, ScheduleCard,
+│                     # DailySchedule (timeline), ForgotPassword, filters, etc.
+├── context/          # UserContext for auth state (user, token, login/logout)
+├── pages/             # Route-level pages: Homepage, Browse, NearbyBrowse,
+│                     # Login, SignUp, Schedule
+├── utils/             # Helpers (genre colour mapping, distance calculation)
+├── App.jsx           # Route definitions and protected route wrapper
+└── main.jsx          # App entry point
+```
+
+
 ## Pages
 
 | Page          | Route          | Description                                          |
