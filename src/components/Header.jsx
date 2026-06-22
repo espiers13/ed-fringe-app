@@ -7,7 +7,7 @@ function Header() {
         <a href="/">
           <img
             src="/ed-fringe-logo.svg"
-            className="h-30 row-span-1 transition-transform duration-300 hover:scale-110 hover:drop-shadow-md"
+            className="h-16 md:h-30 row-span-1 transition-transform duration-300 hover:scale-110 hover:drop-shadow-md"
           />
         </a>
       </div>

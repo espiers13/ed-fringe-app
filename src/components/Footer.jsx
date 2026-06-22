@@ -28,6 +28,15 @@ function Footer() {
           year: "numeric",
         })}
       </p>
+      <p className="text-xs text-gray-500">
+        Experiencing issues? Get in touch at{" "}
+        <a
+          href="mailto:support@myfringeplanner.co.uk"
+          className="underline hover:text-gray-700"
+        >
+          support@myfringeplanner.co.uk
+        </a>
+      </p>
     </footer>
   );
 }

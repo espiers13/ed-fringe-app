@@ -6,9 +6,9 @@ import Login from "./pages/Login";
 import Schedule from "./pages/Schedule";
 import SignUp from "./pages/SignUp";
 import NearbyBrowse from "./pages/NearbyBrowse";
-import { Routes, Route } from "react-router-dom";
+import NotFound from "./pages/NotFound";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useUser } from "./context/UserContext";
-import { Navigate } from "react-router-dom";
 
 function App() {
   const { user, token, logout } = useUser();
@@ -35,6 +35,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
