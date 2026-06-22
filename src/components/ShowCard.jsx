@@ -3,8 +3,10 @@ import { useState } from "react";
 import { addToSchedule, removeFromSchedule } from "../api/api";
 import { useUser } from "../context/UserContext";
 
-function ShowCard({ event, filter }) {
-  const [isAdded, setIsAdded] = useState(false);
+function ShowCard({ event, filter, schedule }) {
+  const [isAdded, setIsAdded] = useState(
+    schedule.some((item) => item.code === event.code),
+  );
   const [message, setMessage] = useState("");
   const { user, token } = useUser();
   const {
@@ -34,6 +36,26 @@ function ShowCard({ event, filter }) {
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const firstDate = new Date(performances[0].start).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+  const lastDate = new Date(
+    performances[performances.length - 1].start,
+  ).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+
+  const allSameTime = performances.every(
+    (p) => formatTime(p.start) === formatTime(performances[0].start),
+  );
+
+  const timeDisplay = allSameTime
+    ? formatTime(performances[0].start)
+    : "Times vary";
+
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 
   function seeMore() {
@@ -67,23 +89,25 @@ function ShowCard({ event, filter }) {
             <p className="text-white font-bold text-sm">{message}</p>
           </div>
         )}
-        <button
-          onClick={isAdded ? removeEvent : addEvent}
-          className="group absolute top-2 right-2 bg-white/70 hover:bg-white p-1.5 rounded-full transition-colors duration-200"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={`w-4 h-4 stroke-red-500 transition-colors duration-200 ${isAdded ? "fill-red-500" : "fill-transparent group-hover:fill-red-500"}`}
-            viewBox="0 0 24 24"
+        {user && (
+          <button
+            onClick={isAdded ? removeEvent : addEvent}
+            className="group absolute top-2 right-2 bg-white/70 hover:bg-white p-1.5 rounded-full transition-colors duration-200"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`w-4 h-4 stroke-red-500 transition-colors duration-200 ${isAdded ? "fill-red-500" : "fill-transparent group-hover:fill-red-500"}`}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
       <span className="self-center text-xs bg-neutral-300 px-2 py-0.5 rounded-xl">
@@ -115,9 +139,11 @@ function ShowCard({ event, filter }) {
             ))
           ) : (
             <p className="text-xs">
-              {formatDateTime(performances[0].start)}
-              {performances.length > 1 &&
-                ` – ${formatDateTime(performances[performances.length - 1].start)}`}
+              {firstDate === lastDate
+                ? firstDate
+                : `${firstDate} – ${lastDate}`}
+              {" | "}
+              {timeDisplay}
             </p>
           )}
         </div>
@@ -159,11 +185,13 @@ function ShowCard({ event, filter }) {
           className="bg-yellow-300 hover:bg-yellow-400 text-xs"
           onClick={seeMore}
         />
-        <Button
-          text={isAdded ? "Remove" : "Add to Schedule"}
-          className="bg-yellow-300 hover:bg-yellow-400 text-xs"
-          onClick={isAdded ? removeEvent : addEvent}
-        />
+        {user && (
+          <Button
+            text={isAdded ? "Remove" : "Add to Schedule"}
+            className="bg-yellow-300 hover:bg-yellow-400 text-xs"
+            onClick={isAdded ? removeEvent : addEvent}
+          />
+        )}
       </div>
     </div>
   );

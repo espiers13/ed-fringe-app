@@ -7,7 +7,7 @@ import DateFilter from "../components/DateFilter";
 import GenreFilter from "../components/GenreFilter";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getAllEvents, searchEvents } from "../api/api";
+import { getAllEvents, searchEvents, getSchedule } from "../api/api";
 import { useUser } from "../context/UserContext";
 
 function Browse() {
@@ -21,6 +21,7 @@ function Browse() {
   const [genreFilter, setGenreFilter] = useState("");
   const [pendingDate, setPendingDate] = useState("");
   const [pendingGenre, setPendingGenre] = useState("");
+  const [schedule, setSchedule] = useState([]);
 
   const page = parseInt(searchParams.get("page") || "1");
   const searchQuery = searchParams.get("query") || "";
@@ -40,8 +41,17 @@ function Browse() {
       })
       .catch((err) => {
         console.log("error:", err);
+        setIsLoading(false);
       });
   }, [page, searchQuery, dateFilter, genreFilter]);
+
+  useEffect(() => {
+    if (user && token) {
+      getSchedule(user.id, token).then((data) => {
+        setSchedule(data ?? []);
+      });
+    }
+  }, [user, token]);
 
   function handleSearch(query) {
     setSearchParams({ query, page: 1 });
@@ -111,7 +121,12 @@ function Browse() {
           {events.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5">
               {events.map((event, index) => (
-                <ShowCard key={index} event={event} filter={dateFilter} />
+                <ShowCard
+                  key={index}
+                  event={event}
+                  filter={dateFilter}
+                  schedule={schedule}
+                />
               ))}
             </div>
           ) : (

@@ -89,6 +89,7 @@ function Login() {
             <div className="text-end mt-2 text-xs">
               <button
                 className="hover:underline text-gray-500"
+                type="button"
                 onClick={handleForgotPassword}
               >
                 Forgot your password?

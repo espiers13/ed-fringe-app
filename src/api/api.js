@@ -1,21 +1,8 @@
 import axios from "axios";
-import CryptoJS from "crypto-js";
-
-const API_KEY = import.meta.env.VITE_FESTIVAL_API_KEY;
-const SECRET = import.meta.env.VITE_FESTIVAL_SECRET;
-
-const festivalApi = axios.create({
-  baseURL: "/festival-api",
-});
 
 const userApi = axios.create({
   baseURL: "https://ed-fringe-be.onrender.com/api",
 });
-
-function signUrl(path) {
-  const signature = CryptoJS.HmacSHA1(path, SECRET).toString(CryptoJS.enc.Hex);
-  return `${path}&signature=${signature}`;
-}
 
 export const getAllEvents = (
   page = 1,
@@ -26,57 +13,34 @@ export const getAllEvents = (
   distance = "",
   size = "25",
 ) => {
-  let path = `/events?festival=demofringe&from=${page}&size=${size}`;
-
-  if (date) {
-    path += `&date_from=${encodeURIComponent(date + " 00:00:00")}`;
-    path += `&date_to=${encodeURIComponent(date + " 23:59:59")}`;
-  }
-  if (genre) path += `&genre=${encodeURIComponent(genre)}`;
-  if (lat && lon) {
-    path += `&lat=${lat}&lon=${lon}`;
-    if (distance) path += `&distance=${distance}`;
-  }
-  path += `&key=${API_KEY}`;
-  const signedUrl = signUrl(path);
-
-  return festivalApi
-    .get(signedUrl)
+  return userApi
+    .get("/festivals/events", {
+      params: { page, size, date, genre, lat, lon, distance },
+    })
     .then(({ data }) => data ?? [])
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const getEventByCode = (code) => {
-  const path = `/events?festival=demofringe&code=${code}&key=${API_KEY}`;
-  const signedUrl = signUrl(path);
-  return festivalApi
-    .get(signedUrl)
-    .then(({ data }) => data[0] ?? null)
-    .catch((err) => console.log(err));
+  return userApi
+    .get(`/festivals/events/${code}`)
+    .then(({ data }) => data ?? null)
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const searchEvents = (query) => {
-  const encodedQuery = encodeURIComponent(query);
-
-  const titleSearch = festivalApi.get(
-    signUrl(`/events?festival=demofringe&title=${encodedQuery}&key=${API_KEY}`),
-  );
-  const artistSearch = festivalApi.get(
-    signUrl(
-      `/events?festival=demofringe&artist=${encodedQuery}&key=${API_KEY}`,
-    ),
-  );
-
-  return Promise.all([titleSearch, artistSearch])
-    .then(([titleResults, artistResults]) => {
-      const combined = [...titleResults.data, ...artistResults.data];
-      const unique = combined.filter(
-        (event, index, self) =>
-          index === self.findIndex((e) => e.url === event.url),
-      );
-      return unique;
+  return userApi
+    .get("/festivals/search", {
+      params: { query },
     })
-    .catch((err) => console.log(err));
+    .then(({ data }) => data ?? [])
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const loginUser = (username, password) => {
