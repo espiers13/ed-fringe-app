@@ -21,6 +21,7 @@ function Footer() {
         Visit the Edinburgh Fringe website
       </a>
       <p>Created by Emily Spiers</p>
+
       <p>
         Last updated:{" "}
         {new Date().toLocaleDateString("en-GB", {

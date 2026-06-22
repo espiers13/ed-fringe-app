@@ -7,6 +7,7 @@ import Schedule from "./pages/Schedule";
 import SignUp from "./pages/SignUp";
 import NearbyBrowse from "./pages/NearbyBrowse";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./pages/ResetPassword";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useUser } from "./context/UserContext";
 
@@ -35,6 +36,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
