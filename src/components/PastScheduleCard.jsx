@@ -13,16 +13,35 @@ function PastScheduleCard({ event, onDelete }) {
     disabled,
     code,
     performances,
+    website,
   } = event;
   const { start, end } = performances[0];
   const { user, token } = useUser();
 
-  const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString("en-GB", {
+  const formatTime = (dateString) =>
+    new Date(dateString).toLocaleString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
+
+  const firstDate = new Date(performances[0].start).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+  const lastDate = new Date(
+    performances[performances.length - 1].start,
+  ).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+
+  const allSameTime = performances.every(
+    (p) => formatTime(p.start) === formatTime(performances[0].start),
+  );
+
+  const timeDisplay = allSameTime
+    ? formatTime(performances[0].start)
+    : "Times vary";
 
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 
@@ -42,60 +61,22 @@ function PastScheduleCard({ event, onDelete }) {
         {genre}
       </span>
 
-      <h1 className="font-bold text-black-500 text-center">{title}</h1>
-      <p className="text-xs italic text-center">{artist}</p>
       <a
-        className="bg-neutral-200 p-2 rounded-sm mt-auto"
-        href={venue.web_address}
+        className="font-bold text-black-500 text-center hover:underline"
+        href={website}
+        target="_blank"
+        rel="noopener noreferrer"
       >
-        <div className="flex gap-0.5 items-center">
-          <p className="font-bold text-sm">{venue.code}</p>
-          <p className="text-xs line-clamp-1">{venue.name}</p>
-          <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
-            {performance_space.name}
-          </p>
-        </div>
-        <hr className="my-1 border-neutral-400 border-0.5" />
-        <p className="text-xs">
-          {formatDateTime(start)} - {formatDateTime(end)}
-        </p>
-        <hr className="my-1 border-neutral-400 border-0.5" />
-        <p className="text-xs md:hidden">{performance_space.name}</p>
-        <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
-        <div className="flex gap-2 items-center">
-          <p className="text-xs">Accessibility:</p>
-          {performance_space.wheelchair_access && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              WC
-            </p>
-          )}
-          {disabled.audio && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              AD
-            </p>
-          )}
-          {disabled.captioning && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              CC
-            </p>
-          )}
-          {disabled.signed && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              BSL
-            </p>
-          )}
-          {!performance_space.wheelchair_access &&
-            !disabled.audio &&
-            !disabled.captioning &&
-            !disabled.signed && <p className="text-xs">N/A</p>}
-        </div>
+        {title}
       </a>
-      <div className="flex justify-center">
-        <Button
-          text="Remove"
-          className="bg-yellow-300 hover:bg-yellow-400 text-xs"
+      <p className="text-xs italic text-center">{artist}</p>
+      <div className="flex justify-center mt-auto">
+        <button
+          className="bg-yellow-300 p-2 w-full hover:bg-yellow-400 text-xs rounded-xl"
           onClick={deleteEvent}
-        />
+        >
+          Remove
+        </button>
       </div>
     </div>
   );

@@ -9,8 +9,13 @@ function Footer() {
           rel="noreferrer"
           className="underline hover:text-gray-600"
         >
-          Edinburgh Festivals API
+          Edinburgh Festivals Listings API
         </a>
+      </p>
+      <p>
+        {" "}
+        This is an independent application and is not officially affiliated with
+        or endorsed by the Edinburgh Festivals.
       </p>
       <a
         href="https://www.edfringe.com"

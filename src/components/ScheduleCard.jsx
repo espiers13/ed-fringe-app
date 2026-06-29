@@ -1,4 +1,3 @@
-import Button from "./Button";
 import { removeFromSchedule } from "../api/api";
 import { useUser } from "../context/UserContext";
 
@@ -18,14 +17,30 @@ function ScheduleCard({ event, onDelete }) {
   const { start, end } = performances[0];
   const { user, token } = useUser();
 
-  const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString("en-GB", {
-      day: "numeric",
-      month: "short",
+  const formatTime = (dateString) =>
+    new Date(dateString).toLocaleString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
+
+  const firstDate = new Date(performances[0].start).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+  const lastDate = new Date(
+    performances[performances.length - 1].start,
+  ).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+
+  const allSameTime = performances.every(
+    (p) => formatTime(p.start) === formatTime(performances[0].start),
+  );
+
+  const timeDisplay = allSameTime
+    ? formatTime(performances[0].start)
+    : "Times vary";
 
   const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
 
@@ -49,67 +64,83 @@ function ScheduleCard({ event, onDelete }) {
         {genre}
       </span>
 
-      <h1 className="font-bold text-black-500 text-center">{title}</h1>
-      <p className="text-xs italic text-center">{artist}</p>
       <a
-        className="bg-neutral-200 p-2 rounded-sm mt-auto"
-        href={venue.web_address}
+        className="font-bold text-black-500 text-center hover:underline"
+        href={website}
+        target="_blank"
+        rel="noopener noreferrer"
       >
-        <div className="flex gap-0.5 items-center">
+        {title}
+      </a>
+      <p className="text-xs italic text-center">{artist}</p>
+      <div className="bg-neutral-200 p-2 rounded-sm mt-auto">
+        <a
+          className="flex gap-0.5 items-center hover:underline"
+          href={venue.web_address}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <p className="font-bold text-sm">{venue.code}</p>
           <p className="text-xs line-clamp-1">{venue.name}</p>
           <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
             {performance_space.name}
           </p>
-        </div>
+        </a>
         <hr className="my-1 border-neutral-400 border-0.5" />
         <p className="text-xs">
-          {formatDateTime(performances[0].start)}
-          {performances.length > 1 &&
-            ` – ${formatDateTime(performances[performances.length - 1].start)}`}
+          {firstDate === lastDate ? firstDate : `${firstDate} – ${lastDate}`}
+          {" | "}
+          {timeDisplay}
         </p>
         <hr className="my-1 border-neutral-400 border-0.5" />
         <p className="text-xs md:hidden">{performance_space.name}</p>
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-2">
           <p className="text-xs">Accessibility:</p>
-          {performance_space.wheelchair_access && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              WC
-            </p>
+          {performance_space.wheelchair_access ||
+          disabled.audio ||
+          disabled.captioning ||
+          disabled.signed ? (
+            <div className="flex gap-2 items-center flex-wrap">
+              {performance_space.wheelchair_access && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  WC
+                </p>
+              )}
+              {disabled.audio && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  AD
+                </p>
+              )}
+              {disabled.captioning && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  CC
+                </p>
+              )}
+              {disabled.signed && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  BSL
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-xs">N/A</p>
           )}
-          {disabled.audio && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              AD
-            </p>
-          )}
-          {disabled.captioning && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              CC
-            </p>
-          )}
-          {disabled.signed && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              BSL
-            </p>
-          )}
-          {!performance_space.wheelchair_access &&
-            !disabled.audio &&
-            !disabled.captioning &&
-            !disabled.signed && <p className="text-xs">N/A</p>}
         </div>
-      </a>
+      </div>
       <div className="flex gap-1 justify-center">
-        <Button
-          text="See More"
-          className="bg-yellow-300 hover:bg-yellow-400 text-xs"
+        <button
+          className="bg-yellow-300 p-2 w-full hover:bg-yellow-400 text-xs rounded-xl"
           onClick={seeMore}
-        />
-        <Button
-          text="Remove"
-          className="bg-yellow-300 hover:bg-yellow-400 text-xs"
+        >
+          See More
+        </button>
+        <button
+          className="bg-yellow-300 p-2 w-full hover:bg-yellow-400 text-xs rounded-xl"
           onClick={deleteEvent}
-        />
+        >
+          Remove
+        </button>
       </div>
     </div>
   );

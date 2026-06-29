@@ -110,25 +110,33 @@ function ShowCard({ event, filter, schedule }) {
         )}
       </div>
 
-      <span className="self-center text-xs bg-neutral-300 px-2 py-0.5 rounded-xl">
+      <span className="self-center text-xs bg-neutral-300 px-2 py-0.5 rounded-xl text-center">
         {genre}
       </span>
 
-      <p className="font-bold text-black-500 text-center text-sm">{title}</p>
+      <a
+        className="font-bold text-black-500 text-center hover:underline"
+        href={website}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {title}
+      </a>
       <p className="text-xs italic text-center">{artist}</p>
       <p className="text-xs line-clamp-10 min-w-0">{description}</p>
-      <a
-        className="bg-neutral-200 p-2 rounded-sm mt-auto"
-        href={venue.web_address}
-      >
-        <div className="flex gap-0.5 items-center">
+      <div className="bg-neutral-200 p-2 rounded-sm mt-auto">
+        <a
+          className="flex gap-0.5 items-center hover:underline"
+          href={venue.web_address}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <p className="font-bold text-sm">{venue.code}</p>
           <p className="text-xs line-clamp-1">{venue.name}</p>
-
           <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
             {performance_space.name}
           </p>
-        </div>
+        </a>
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
         <div className="flex flex-col gap-0.5">
           {filter === "today" ? (
@@ -151,46 +159,53 @@ function ShowCard({ event, filter, schedule }) {
         <p className="text-xs md:hidden">{performance_space.name}</p>
 
         <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-2">
           <p className="text-xs">Accessibility:</p>
-          {performance_space.wheelchair_access && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              WC
-            </p>
+          {performance_space.wheelchair_access ||
+          disabled.audio ||
+          disabled.captioning ||
+          disabled.signed ? (
+            <div className="flex gap-2 items-center flex-wrap">
+              {performance_space.wheelchair_access && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  WC
+                </p>
+              )}
+              {disabled.audio && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  AD
+                </p>
+              )}
+              {disabled.captioning && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  CC
+                </p>
+              )}
+              {disabled.signed && (
+                <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
+                  BSL
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-xs">N/A</p>
           )}
-          {disabled.audio && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              AD
-            </p>
-          )}
-          {disabled.captioning && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              CC
-            </p>
-          )}
-          {disabled.signed && (
-            <p className="text-xs bg-neutral-300 rounded-2xl p-1 font-bold">
-              BSL
-            </p>
-          )}
-          {!performance_space.wheelchair_access &&
-            !disabled.audio &&
-            !disabled.captioning &&
-            !disabled.signed && <p className="text-xs">N/A</p>}
         </div>
-      </a>
+      </div>
       <div className="flex gap-1 justify-center">
-        <Button
-          text="See More"
-          className="bg-yellow-300 hover:bg-yellow-400 text-xs"
+        <button
+          className="bg-yellow-300 p-2 w-full hover:bg-yellow-400 text-xs rounded-xl"
           onClick={seeMore}
-        />
+        >
+          See More
+        </button>
         {user && (
-          <Button
-            text={isAdded ? "Remove" : "Add to Schedule"}
-            className="bg-yellow-300 hover:bg-yellow-400 text-xs"
+          <button
+            className="bg-yellow-300 p-2 w-full hover:bg-yellow-400 text-xs rounded-xl"
             onClick={isAdded ? removeEvent : addEvent}
-          />
+          >
+            {isAdded ? "Remove" : "Add to Schedule"}
+          </button>
         )}
       </div>
     </div>
