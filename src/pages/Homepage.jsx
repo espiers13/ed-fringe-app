@@ -44,7 +44,7 @@ function Homepage() {
         </div>
 
         <img
-          src="/stock-img-1.jpg"
+          src="/ed-fringe-img.jpeg"
           className="rounded-xl w-full object-cover"
         />
       </div>

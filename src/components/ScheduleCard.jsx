@@ -42,7 +42,7 @@ function ScheduleCard({ event, onDelete }) {
     ? formatTime(performances[0].start)
     : "Times vary";
 
-  const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
+  const image = Object.values(images)?.[0]?.versions?.["square-150"]?.url;
 
   function seeMore() {
     window.location.href = website;

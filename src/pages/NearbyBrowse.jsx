@@ -29,7 +29,12 @@ function NearbyBrowse() {
     return lat >= 55.9 && lat <= 56.0 && lon >= -3.3 && lon <= -3.1;
   };
 
+  const today = new Date();
+  const isAugust = today.getMonth() === 7; // getMonth() is 0-indexed: Jan=0 ... Aug=7
+
   useEffect(() => {
+    if (!isAugust) return; // no point fetching location/events outside August
+
     setIsLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -58,7 +63,7 @@ function NearbyBrowse() {
         setIsLoading(false);
       },
     );
-  }, [page, dateFilter, genreFilter]);
+  }, [page, dateFilter, genreFilter, isAugust]);
 
   function handleFilters(e) {
     e.preventDefault();
@@ -86,11 +91,18 @@ function NearbyBrowse() {
         </div>
       </div>
 
-      {isLoading ? (
+      {!isAugust ? (
+        <div className="text-center mt-10">
+          <p>Check back in August!</p>
+        </div>
+      ) : isLoading ? (
         <Loading />
       ) : !currentLocation ? (
         <Loading />
-      ) : isInEdinburgh(currentLocation.latitude, currentLocation.longitude) ? (
+      ) : !isInEdinburgh(
+          currentLocation.latitude,
+          currentLocation.longitude,
+        ) ? (
         <div>
           <div className="flex mt-3 gap-2">
             <div className="w-3/4">

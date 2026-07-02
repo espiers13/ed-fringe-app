@@ -56,7 +56,7 @@ function ShowCard({ event, filter, schedule }) {
     ? formatTime(performances[0].start)
     : "Times vary";
 
-  const image = Object.values(images)?.[0]?.versions?.["thumb-100"]?.url;
+  const image = Object.values(images)?.[0]?.versions?.["square-150"]?.url;
 
   function seeMore() {
     window.open(website, "_blank");
@@ -132,12 +132,12 @@ function ShowCard({ event, filter, schedule }) {
           rel="noopener noreferrer"
         >
           <p className="font-bold text-sm">{venue.code}</p>
-          <p className="text-xs line-clamp-1">{venue.name}</p>
-          <p className="text-xs line-clamp-1 hidden md:block ml-auto text-neutral-500">
+          <p className="text-xs line-clamp-1">| {venue.name}</p>
+          <p className="text-xs line-clamp-1 md:block ml-auto text-neutral-500">
             {performance_space.name}
           </p>
         </a>
-        <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
+        <hr className="my-1 border-neutral-400 border-0.5 " />
         <div className="flex flex-col gap-0.5">
           {filter === "today" ? (
             performances.map((p, i) => (
@@ -156,9 +156,6 @@ function ShowCard({ event, filter, schedule }) {
           )}
         </div>
         <hr className="my-1 border-neutral-400 border-0.5" />
-        <p className="text-xs md:hidden">{performance_space.name}</p>
-
-        <hr className="my-1 border-neutral-400 border-0.5 md:hidden" />
         <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-2">
           <p className="text-xs">Accessibility:</p>
           {performance_space.wheelchair_access ||
